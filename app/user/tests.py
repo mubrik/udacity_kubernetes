@@ -1,12 +1,12 @@
 '''
-  holds test cases for the auth module
+  holds test cases for the user module
 '''
 import unittest
 from app import app, db
 
-class AuthTestCase(unittest.TestCase):
+class UserTestCase(unittest.TestCase):
   '''
-    base class for auth tests
+    base class for user tests
   '''
   def setUp(self):
     '''
@@ -35,7 +35,7 @@ class AuthTestCase(unittest.TestCase):
     '''
       test something
     '''
-    result = self.client().get('/api/auth/test')
+    result = self.client().get('/api/user/test')
     self.assertEqual(result.status_code, 200)
     self.assertIn('test', result.json['message'])
     pass

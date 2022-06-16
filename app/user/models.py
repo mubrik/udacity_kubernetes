@@ -1,5 +1,5 @@
 '''
-  Models for auth
+  Models for user
 '''
 from app import db
 

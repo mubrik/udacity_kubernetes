@@ -6,20 +6,19 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Statement for enabling the development environment
-DEBUG = os.environ.get("DEBUG", True)
+DEBUG = env.get("DEBUG", False) # false for testing
 
 DB_TYPE = env.get('DB_TYPE', 'sqlite')
-DB_NAME = env.get('DB_NAME', 'tests')
-DB_URI = env.get('DB_URI', None)
+TEST_DB_NAME = env.get('TEST_DB_NAME', 'tests')
+TEST_DB_URI = env.get('TEST_DB_URI', None)
 # db path
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-DB_PATH = os.path.join(BASE_DIR, DB_NAME)
-
+TEST_DB_PATH = os.path.join(BASE_DIR, TEST_DB_NAME)
+print("TEST_DB_PATH:", TEST_DB_PATH)
 # Define the database - we are working with
 # TEST_DB_NAME for sqllite, DB_URI for postgres
-SQLALCHEMY_DATABASE_URI = f'sqlite:///{DB_PATH}'\
-  if DB_TYPE == 'sqlite' else DB_URI
-
+SQLALCHEMY_DATABASE_URI = f'sqlite:///{TEST_DB_PATH}'\
+  if DB_TYPE == 'sqlite' else TEST_DB_URI
 # print queries if debug
 SQLALCHEMY_ECHO = True if DEBUG else False
 # over head

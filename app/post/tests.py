@@ -1,12 +1,12 @@
 '''
-  holds test cases for the auth module
+  holds test cases for the Post module
 '''
 import unittest
 from app import app, db
 
 class PostTestCase(unittest.TestCase):
   '''
-    base class for auth tests
+    base class for post tests
   '''
   def setUp(self):
     '''
