@@ -130,3 +130,8 @@ dmypy.json
 
 # local sqllite
 *.db
+
+# others
+firstcloudtemplate.yml
+iamrolepolicycloud.json
+trust.json
