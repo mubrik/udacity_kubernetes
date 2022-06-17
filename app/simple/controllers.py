@@ -1,5 +1,5 @@
 '''
-  holds routes for simple app
+  holds routes for simple app.
 '''
 from os import abort, environ as env
 from flask import Blueprint, request, jsonify
