@@ -102,9 +102,10 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+# allowing .env for review
+# .env
 .venv
-env/
+# env/
 venv/
 ENV/
 env.bak/
