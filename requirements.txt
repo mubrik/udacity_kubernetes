@@ -6,5 +6,6 @@ ruamel.yaml==0.16.5
 itsdangerous==2.0.1
 werkzeug==2.0.3
 gunicorn==20.0.4
-pytest==6.2.2
+# 6.2.2 caused error
+pytest==6.2.5
 python-dotenv==0.20.0

@@ -11,14 +11,16 @@ from .utils import requires_authentication
 load_dotenv()
 
 # get env vars
-JWT_SECRET = env.get('JWT_SECRET', None)
+# for some reason aws isnt getting the JWT secret even tho it is in param store of region
+# adding a default server side secret
+JWT_SECRET = env.get('JWT_SECRET', "thisismysecret")
 LOG_LEVEL = env.get('LOG_LEVEL', 'INFO')
 
 simple_bp = Blueprint('simple_bp', __name__)
 
 @simple_bp.route('/')
 def index():
-  return "Healthy"
+  return jsonify("Healthy")
 
 
 @simple_bp.route('/auth', methods=['POST'])
@@ -29,7 +31,7 @@ def auth():
   print(email, password)
   # check variabkes
   if email is None or password is None:
-    return jsonify({'error': 'No data'}), 400
+    return jsonify({'error': 'Data is incomplete'}), 400
   
   if JWT_SECRET is None:
     return jsonify({'error': 'Missing JWT'}), 400
@@ -37,7 +39,7 @@ def auth():
   # create jwt token
   encoded_jwt = jwt.encode({'email': email, 'password': password}, JWT_SECRET, algorithm='HS256')
   
-  return encoded_jwt
+  return jsonify({'token': encoded_jwt.decode('utf-8')})
 
 
 @simple_bp.route('/contents')
