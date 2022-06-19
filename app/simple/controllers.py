@@ -1,8 +1,9 @@
 '''
   holds routes for simple app
 '''
-from os import abort, environ as env
-from flask import Blueprint, request, jsonify
+from os import environ as env
+from typing import Dict
+from flask import Blueprint, request, jsonify, abort
 import jwt
 from dotenv import load_dotenv
 from .utils import requires_authentication
@@ -25,10 +26,14 @@ def index():
 
 @simple_bp.route('/auth', methods=['POST'])
 def auth():
-  data = request.get_json()
+  data: None|Dict[str,str] = request.get_json()
+  
+  if data is None:
+    abort(400, "No data provided")
+    
   email = data['email']
   password = data['password']
-  print(email, password)
+
   # check variabkes
   if email is None or password is None:
     return jsonify({'error': 'Data is incomplete'}), 400
@@ -55,4 +60,55 @@ def get_payload(token):
 
   
   return jsonify(decoded)
+  
+
+@simple_bp.errorhandler(422)
+def handle_422(error):
+  # bad syntax
+  return jsonify({
+      "success": False,
+      "message": error.description if error.description is not None else "Error in Query/Data",
+      "error": 422
+  }), 422
+
+
+@simple_bp.errorhandler(404)
+def handle_404(error):
+  # Not Found
+  print(error.description)
+  return jsonify({
+      "success": False,
+      "message": error.description if error.description is not None else "Resource not Found",
+      "error": 404
+  }), 404
+  
+@simple_bp.errorhandler(400)
+def handle_400(error):
+  # Not Found
+  print(error.description)
+  return jsonify({
+      "success": False,
+      "message": error.description if error.description is not None else "Bad Syntax",
+      "error": 400
+  }), 400
+
+
+@simple_bp.errorhandler(405)
+def handle_405(error):
+  # Method Not Allowed
+  return jsonify({
+      "success": False,
+      "message": "Method not allowed",
+      "error": 405
+  }), 405
+
+
+@simple_bp.errorhandler(503)
+def handle_503(error):
+  # Server cannot process the request
+  return jsonify({
+      "success": False,
+      "message": error.description if error.description is not None else "System Busy",
+      "error": 503
+  }), 503
   
