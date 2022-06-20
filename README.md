@@ -63,13 +63,17 @@ flask run -p 8080
 gunicorn -b :8080 app:app
 ```
 
-To test:
+- To test the routes in the app using curl
+
+Testing home route:
 
 ``` bash
 curl http://localhost:8080
 ```
 
 This should return a string `Healthy`
+
+Testing auth route:
 
 ```bash
 curl -X POST http://localhost:8080/auth -H 'Content-Type: application/json' -d '{"email":"my_email","password":"my_password"}'
@@ -82,6 +86,8 @@ This should return a json object in the form:
   'token':'long jwt token'
 }
 ```
+
+Testing contents route:
 
 ```bash
 curl http://localhost:8080/contents -H 'Content-Type: application/json' -H 'Authorization: Bearer long jwt token'
@@ -154,10 +160,10 @@ Remove a container:
 docker container rm containerName
 ```
 
-## Verify Docker
+## Verify app in Docker
 
-- Refer to the same commands in [verify-app](#verify-app)
-- Change the port number to match -p command when you run the container
+- Refer to the same curl commands in [verify-app](#verify-app)
+- Change the port number in the commands to match the port specified in the -p parameter when you run the container
 
 ## AWS Deployment
 
@@ -201,7 +207,7 @@ export AWS_CONFIG_FILE=~/.aws/config
 export AWS_SHARED_CREDENTIALS_FILE=~/.aws/credentials
 ```
 
-Running the above will only make them visible in your current terminal, to make a permanent reference, edit your .profile file **but** if a .bashrc file exist edit that instead and add the above command to the end of the file, for windows users you can simply search envirnment variables in search box and create them in the options
+Running the above will only make them visible in your current terminal, to make a permanent reference, edit your ~/.profile file **but** if a ~/.bashrc file exist edit that instead and add the above commands to the end of the file, for windows users you can simply search envirnment variables in search box and create them in the options
 
 - To verify success run `aws iam list-users` or `aws iam list-users --profile new_profile_name` you should get an output similar to:
 
@@ -231,7 +237,7 @@ There is a `trust.json` file in the current directory to use, all you have to do
 
 ```JSON
 "Principal": {
-  "AWS": "arn:aws:iam::413441544942:user/Admin"
+  "AWS": "arn:aws:iam::388752792305:user/YOURIAMUSERNAME"
 }
 ```
 
@@ -240,16 +246,22 @@ Now we create the policy, which is also convienently in the directory file: `iam
 The next steps involve createing a **trusted role** then attaching the above policy to it
 
 To create the role run:
-`aws iam create-role --role-name YourRoleName --assume-role-policy-document file://trust.json --output json --query 'Role.Arn'`
+
+```bash
+aws iam create-role --role-name YourRoleName --assume-role-policy-document file://trust.json --output json --query 'Role.Arn'
+```
 
 - `--assume-role-policy-document` imortant to leave the file:// as is or it errors, it links the trust.json file
 - `--role-name` name of the role
 - `--query` information to query and display, we are querying the ARN/amazon resource names of the role
 
 Now we attach the policy to the role we created above run:
-`aws iam put-role-policy --role-name YourRoleName --policy-name eks-describe --policy-document file://iamrolepolicy.json`
 
-That basically gives that role the policy access to eks and ssm, read [here](https://docs.aws.amazon.com/cli/latest/reference/iam/put-role-policy.html)
+```bash
+aws iam put-role-policy --role-name YourRoleName --policy-name eks-describe --policy-document file://iamrolepolicy.json
+```
+
+That command basically gives that role the policy access to eks and ssm, read [here](https://docs.aws.amazon.com/cli/latest/reference/iam/put-role-policy.html)
 
 With that done, you are ready for Deployment! Although we wont be implementing **CI/CD** here as that requires a long cloud formation template which i don't know how to create .. yet :D, we will be deploying manually.
 
@@ -283,7 +295,7 @@ docker push simple-jwt-api:latest
 
 Now we deploy our simple app to our created cluster by using kubectl
 
-- open the file `simple_jwt_api`, under container replace the CONTAINER_IMAGE with `<docker username>/simple-jwt-api`
+Open the file `simple_jwt_api`, under container replace the CONTAINER_IMAGE with `<docker username>/simple-jwt-api`
 
 Create deployment:
 `kubectl apply -f simple_jwt_api.yml`
